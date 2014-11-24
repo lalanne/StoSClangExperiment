@@ -1,9 +1,14 @@
+
+#include "clang/AST/ASTContext.h"
+#include "clang/AST/StmtOpenMP.h"
+#include "clang/Basic/OpenMPKinds.h"
 #include "clang/AST/ASTConsumer.h"                                                        
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Tooling/Tooling.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/AST/StmtOpenMP.h"
 
 #include <iostream>
 #include <sstream>
@@ -16,11 +21,12 @@ using namespace clang::tooling;
 static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
 
 class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
+    int count_omp = 0;
     public:
         MyASTVisitor(Rewriter &R) : myRewriter(R) {}
 
         bool VisitStmt(Stmt *s) {
-            cout<<"statement found!!!"<<endl;
+            //cout<<"statement found!!!"<<endl;
             // Only care about If statements.
             if (isa<IfStmt>(s)) {
                 IfStmt *ifStatement = cast<IfStmt>(s);
@@ -36,6 +42,7 @@ class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
                                         "// the 'else' part\n",
                                         true, 
                                         true);
+
                 }
             }
 
@@ -49,6 +56,55 @@ class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
                                     true);
             }
 
+            if(isa<OMPExecutableDirective>(s)){
+                cout<<"OMP Executable Directive!!!!!  "<<endl;
+                OMPExecutableDirective* ompExecutableDirective = cast<OMPExecutableDirective>(s);
+                if(isa<OMPParallelDirective>(s)){
+                    cout<<"OMP Parallel Directive"<<endl;
+                }
+                
+                if(isa<OMPParallelForDirective>(s)){
+                    cout<<"OMP Parallel For Directive"<<count_omp<<endl;
+                    OMPParallelForDirective* ompParallelForDirective = cast<OMPParallelForDirective>(s);
+
+                    OMPClause* clause = ompParallelForDirective->getClause(0); 
+                    if(clause->getClauseKind() == OMPC_schedule){
+                        cout<<"Schedule clause recognized!!!!"<<endl;
+                        OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
+                        count_omp++;
+                        if(count_omp == 1){
+                            switch(scheduleClause->getScheduleKind()){
+                                case OMPC_SCHEDULE_static:
+                                {
+                                    if(count_omp == 1){
+                                    cout<<"static scheduling..."<<endl;
+                                    /*myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
+                                                        "runtime", 
+                                                        true,
+                                                        true);*/
+                                    //scheduleClause->setScheduleKind(OMPC_SCHEDULE_runtime);
+                                    myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
+                                                        6);
+                                    myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
+                                                        "runtime", 
+                                                        true,
+                                                        true);
+                                }
+                                break;
+
+                                case OMPC_SCHEDULE_runtime:
+                                {
+                                    cout<<"runtime scheduling..."<<endl;
+                                }
+                                break;
+                            
+                            }
+                        }
+
+                    }
+                }
+            }
+            }
             return true;
         }
 
@@ -122,11 +178,12 @@ class MyFrontendAction : public ASTFrontendAction {
             myRewriter.getEditBuffer(SM.getMainFileID()).write(llvm::outs());
         } 
 
-        std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
+        /*std::unique_ptr<ASTConsumer>*/ASTConsumer*  CreateASTConsumer(CompilerInstance &CI,
                                                  StringRef file) override {
             llvm::errs() << "** Creating AST consumer for: " << file << "\n";
             myRewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
-            return llvm::make_unique<MyASTConsumer>(myRewriter);
+            //return llvm::make_unique<MyASTConsumer>(myRewriter);
+            return new MyASTConsumer(myRewriter); //danger!!!! awful leak!!!!
         }
 
     private:
