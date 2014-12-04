@@ -22,11 +22,19 @@ static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
 
 class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
     public:
-        MyASTVisitor(Rewriter &R) : myRewriter(R) {}
+        MyASTVisitor(Rewriter &R) : lineNumber{0},
+                                    ompDirectiveLineNumberCache{0},
+                                    myRewriter{R}{}
 
         bool VisitStmt(Stmt *s) {
-            //cout<<"statement found!!!"<<endl;
             // Only care about If statements.
+            cout<<"name: "<<s->getStmtClassName()<<endl; 
+            SourceLocation omp_loc = s->getLocStart();
+            SourceManager &SM = myRewriter.getSourceMgr();
+            lineNumber = SM.getSpellingLineNumber(omp_loc);
+            cout<<"line: "<<lineNumber<<endl;
+            
+            
             if (isa<IfStmt>(s)) {
                 IfStmt *ifStatement = cast<IfStmt>(s);
                 Stmt *Then = ifStatement->getThen();
@@ -55,54 +63,62 @@ class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
                                     true);
             }
 
+            cout<<"asking for omp!"<<endl;
+
             if(isa<OMPExecutableDirective>(s)){
                 cout<<"OMP Executable Directive!!!!!  "<<endl;
-                OMPExecutableDirective* ompExecutableDirective = cast<OMPExecutableDirective>(s);
-                if(isa<OMPParallelDirective>(s)){
-                    cout<<"OMP Parallel Directive"<<endl;
-                }
-                
-                if(isa<OMPParallelForDirective>(s)){
-                    cout<<"OMP Parallel For Directive"<<endl;
-                    OMPParallelForDirective* ompParallelForDirective = cast<OMPParallelForDirective>(s);
 
-                    OMPClause* clause = ompParallelForDirective->getClause(0); 
-                    if(clause->getClauseKind() == OMPC_schedule){
-                        cout<<"Schedule clause recognized!!!!"<<endl;
-                        OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
+                if(ompDirectiveLineNumberCache != lineNumber){
+                    ompDirectiveLineNumberCache = lineNumber;
+                    OMPExecutableDirective* ompExecutableDirective = cast<OMPExecutableDirective>(s);
 
-                        switch(scheduleClause->getScheduleKind()){
-                            case OMPC_SCHEDULE_static:
-                            {
-                                cout<<"static scheduling..."<<endl;
-                                myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                    6);
-                                myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                    "runtime", 
-                                                    true,
-                                                    true);
+
+                    if(isa<OMPParallelDirective>(s)){
+                        cout<<"OMP Parallel Directive"<<endl;
+                    }
+                    
+                    if(isa<OMPParallelForDirective>(s)){
+                        cout<<"OMP Parallel For Directive"<<endl;
+                        OMPParallelForDirective* ompParallelForDirective = cast<OMPParallelForDirective>(s);
+
+                        OMPClause* clause = ompParallelForDirective->getClause(0); 
+                        if(clause->getClauseKind() == OMPC_schedule){
+                            cout<<"Schedule clause recognized!!!!"<<endl;
+                            OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
+
+                            switch(scheduleClause->getScheduleKind()){
+                                case OMPC_SCHEDULE_static:
+                                {
+                                    cout<<"static scheduling..."<<endl;
+                                    myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
+                                                        6);
+                                    myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
+                                                        "runtime", 
+                                                        true,
+                                                        true);
+                                }
+                                break;
+
+                                case OMPC_SCHEDULE_runtime:
+                                {
+                                    cout<<"runtime scheduling..."<<endl;
+                                }
+                                break;
+                            
                             }
-                            break;
-
-                            case OMPC_SCHEDULE_runtime:
-                            {
-                                cout<<"runtime scheduling..."<<endl;
-                            }
-                            break;
-                        
                         }
                     }
-
                 }
             }
-
+            
+            cout<<"end visit"<<endl<<endl;
             return true;
         }
 
         bool VisitFunctionDecl(FunctionDecl *f) {
             // Only function definitions (with bodies), not declarations.
             if (f->hasBody()) {
-                cout<<"function with a real body"<<endl;
+                cout<<"function with a real body"<<endl<<endl;
                 Stmt *FuncBody = f->getBody();
 
                 // Type name as string
@@ -131,6 +147,10 @@ class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
         }
 
     private:
+        /*This 2 fields are used for controlling the visit to OMP directives
+         * that for some reason clang is visiting twice*/
+        unsigned int lineNumber;
+        unsigned int ompDirectiveLineNumberCache;
         /*Handles Rewriting of the source code*/
         Rewriter &myRewriter;
 };
