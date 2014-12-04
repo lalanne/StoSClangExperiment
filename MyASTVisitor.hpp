@@ -1,4 +1,7 @@
 
+#ifndef MY_AST_VISITOR_98U9EW8FU9QW8UEF
+#define MY_AST_VISITOR_98U9EW8FU9QW8UEF
+
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/AST/RecursiveASTVisitor.h"
@@ -141,3 +144,4 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         clang::Rewriter &myRewriter;
 };
 
+#endif //MY_AST_VISITOR_98U9EW8FU9QW8UEF

@@ -1,27 +1,25 @@
 
-#include "clang/AST/ASTConsumer.h"                                                        
+#ifndef MY_AST_VISITOR_WIUHFEIQUWHFE
+#define MY_AST_VISITOR_WIUHFEIQUWHFE
 
-#include <iostream>
+#include "MyASTVisitor.hpp"
+
+#include "clang/AST/ASTConsumer.h"
+#include "clang/Rewrite/Core/Rewriter.h"
 
 /*chooses which AST Parsing events to handle*/
-class MyASTConsumer : public clang::ASTConsumer {
+class MyASTConsumer : public clang::ASTConsumer{
     public:
-        MyASTConsumer(clang::Rewriter &R) : visitor(R) {}
+        MyASTConsumer(clang::Rewriter &R);
 
         /*override the method that gets called for each parsed top-level
         declaration.*/
-        bool HandleTopLevelDecl(clang::DeclGroupRef DR) override {
-            std::cout<<"top level function declaration"<<std::endl;
-            for (clang::DeclGroupRef::iterator b = DR.begin(), e = DR.end(); b != e; ++b) {
-                /* Traverse the declaration using our AST visitor.
-                 Go inside every function and apply visitor*/
-                visitor.TraverseDecl(*b);
-                (*b)->dump();
-            }
-             return true;
-        }
+        bool HandleTopLevelDecl(clang::DeclGroupRef DR) override;
 
     private:
         MyASTVisitor visitor;
 };
+
+#endif //MY_AST_VISITOR_WIUHFEIQUWHFE
+
 
