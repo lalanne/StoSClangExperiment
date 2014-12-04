@@ -21,7 +21,6 @@ using namespace clang::tooling;
 static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
 
 class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
-    int count_omp = 0;
     public:
         MyASTVisitor(Rewriter &R) : myRewriter(R) {}
 
@@ -64,42 +63,39 @@ class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
                 }
                 
                 if(isa<OMPParallelForDirective>(s)){
-                    cout<<"OMP Parallel For Directive"<<count_omp<<endl;
+                    cout<<"OMP Parallel For Directive"<<endl;
                     OMPParallelForDirective* ompParallelForDirective = cast<OMPParallelForDirective>(s);
 
                     OMPClause* clause = ompParallelForDirective->getClause(0); 
                     if(clause->getClauseKind() == OMPC_schedule){
                         cout<<"Schedule clause recognized!!!!"<<endl;
                         OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
-                        count_omp++;
-                        if(count_omp == 1){
-                            switch(scheduleClause->getScheduleKind()){
-                                case OMPC_SCHEDULE_static:
-                                {
-                                    if(count_omp == 1){
-                                    cout<<"static scheduling..."<<endl;
-                                    myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                        6);
-                                    myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                        "runtime", 
-                                                        true,
-                                                        true);
-                                }
-                                break;
 
-                                case OMPC_SCHEDULE_runtime:
-                                {
-                                    cout<<"runtime scheduling..."<<endl;
-                                }
-                                break;
-                            
+                        switch(scheduleClause->getScheduleKind()){
+                            case OMPC_SCHEDULE_static:
+                            {
+                                cout<<"static scheduling..."<<endl;
+                                myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
+                                                    6);
+                                myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
+                                                    "runtime", 
+                                                    true,
+                                                    true);
                             }
-                        }
+                            break;
 
+                            case OMPC_SCHEDULE_runtime:
+                            {
+                                cout<<"runtime scheduling..."<<endl;
+                            }
+                            break;
+                        
+                        }
                     }
+
                 }
             }
-            }
+
             return true;
         }
 
