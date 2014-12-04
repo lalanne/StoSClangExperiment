@@ -78,11 +78,6 @@ class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
                                 {
                                     if(count_omp == 1){
                                     cout<<"static scheduling..."<<endl;
-                                    /*myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                        "runtime", 
-                                                        true,
-                                                        true);*/
-                                    //scheduleClause->setScheduleKind(OMPC_SCHEDULE_runtime);
                                     myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
                                                         6);
                                     myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
