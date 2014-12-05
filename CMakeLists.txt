@@ -1,11 +1,13 @@
 set(LLVM_LINK_COMPONENTS support)
 set(LLVM_USED_LIBS clangTooling clangBasic clangAST)
 
+include_directories(include)
+
 add_clang_executable(sts
-    sts.cpp
-    MyASTConsumer.cpp
-    MyFrontendAction.cpp
-    MyASTVisitor.cpp
+    src/sts.cpp
+    src/MyASTConsumer.cpp
+    src/MyFrontendAction.cpp
+    src/MyASTVisitor.cpp
   )
 
 target_link_libraries(sts

@@ -4,6 +4,8 @@
 using namespace clang;
 using namespace std;
 
+const unsigned int NUMBER_OF_CHARACTERS_STATIC_SCHEDULE = 6;
+
 MyASTVisitor::MyASTVisitor(Rewriter &R) : lineNumber{0},
                                         ompDirectiveLineNumberCache{0},
                                         myRewriter{R}{}
@@ -74,7 +76,7 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
                         {
                             cout<<"static scheduling..."<<endl;
                             myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                6);
+                                                NUMBER_OF_CHARACTERS_STATIC_SCHEDULE);
                             myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
                                                 "runtime", 
                                                 true,
