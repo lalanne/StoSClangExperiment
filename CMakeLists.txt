@@ -4,6 +4,7 @@ set(LLVM_USED_LIBS clangTooling clangBasic clangAST)
 add_clang_executable(sts
                     sts.cpp
                     MyASTConsumer.cpp
+                    MyFrontendAction.cpp
                 )
 
 target_link_libraries(sts
