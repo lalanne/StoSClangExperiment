@@ -1,6 +1,7 @@
 
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Frontend/FrontendAction.h"
+#include "clang/Frontend/CompilerInstance.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/Basic/SourceManager.h"
 

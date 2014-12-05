@@ -1,4 +1,5 @@
 
+#include "MyASTConsumer.hpp"
 #include "MyFrontendAction.hpp"
 
 using namespace clang;
@@ -16,7 +17,7 @@ void MyFrontendAction::EndSourceFileAction(){
 } 
 
 ASTConsumer*  MyFrontendAction::CreateASTConsumer(CompilerInstance &CI,
-                                                StringRef file) override {
+                                                StringRef file){
     llvm::errs() << "** Creating AST consumer for: " << file << "\n";
     myRewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
     //return llvm::make_unique<MyASTConsumer>(myRewriter);
