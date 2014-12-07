@@ -14,7 +14,6 @@ using namespace clang::tooling;
 static llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
 
 int main(int argc, const char **argv){
-    cout<<"Hello World!"<<endl;
     CommonOptionsParser op(argc, argv, ToolingSampleCategory);
     ClangTool Tool(op.getCompilations(), op.getSourcePathList());
 

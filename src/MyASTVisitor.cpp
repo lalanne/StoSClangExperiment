@@ -12,14 +12,11 @@ MyASTVisitor::MyASTVisitor(Rewriter &R) : lineNumber{0},
 
 bool MyASTVisitor::VisitStmt(Stmt *s){
     // Only care about If statements.
-    cout<<"name: "<<s->getStmtClassName()<<endl; 
 
     SourceLocation omp_loc = s->getLocStart();
     SourceManager &SM = myRewriter.getSourceMgr();
     lineNumber = SM.getSpellingLineNumber(omp_loc);
 
-    cout<<"line: "<<lineNumber<<endl;
-    
     if (isa<IfStmt>(s)) {
         IfStmt *ifStatement = cast<IfStmt>(s);
         Stmt *Then = ifStatement->getThen();
@@ -39,7 +36,6 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
     }
 
     if(isa<ForStmt>(s)){
-        cout<<"for loop found!!!!"<<endl;
         ForStmt *forStatement = cast<ForStmt>(s);
         Stmt *body = forStatement->getBody();
         myRewriter.InsertText(body->getLocStart(), 
@@ -48,10 +44,7 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
                             true);
     }
 
-    cout<<"asking for omp!"<<endl;
-
     if(isa<OMPExecutableDirective>(s)){
-        cout<<"OMP Executable Directive!!!!!  "<<endl;
 
         if(ompDirectiveLineNumberCache != lineNumber){
             ompDirectiveLineNumberCache = lineNumber;
@@ -59,22 +52,18 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
 
 
             if(isa<OMPParallelDirective>(s)){
-                cout<<"OMP Parallel Directive"<<endl;
             }
             
             if(isa<OMPParallelForDirective>(s)){
-                cout<<"OMP Parallel For Directive"<<endl;
                 OMPParallelForDirective* ompParallelForDirective = cast<OMPParallelForDirective>(s);
 
                 OMPClause* clause = ompParallelForDirective->getClause(0); 
                 if(clause->getClauseKind() == OMPC_schedule){
-                    cout<<"Schedule clause recognized!!!!"<<endl;
                     OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
 
                     switch(scheduleClause->getScheduleKind()){
                         case OMPC_SCHEDULE_static:
                         {
-                            cout<<"static scheduling..."<<endl;
                             myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
                                                 NUMBER_OF_CHARACTERS_STATIC_SCHEDULE);
                             myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
@@ -86,7 +75,6 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
 
                         case OMPC_SCHEDULE_runtime:
                         {
-                            cout<<"runtime scheduling..."<<endl;
                         }
                         break;
                     
@@ -96,14 +84,12 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
         }
     }
     
-    cout<<"end visit"<<endl<<endl;
     return true;
 }
 
 bool MyASTVisitor::VisitFunctionDecl(FunctionDecl *f){
     // Only function definitions (with bodies), not declarations.
     if (f->hasBody()) {
-        cout<<"function with a real body"<<endl<<endl;
         Stmt *FuncBody = f->getBody();
 
         // Type name as string
