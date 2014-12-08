@@ -11,8 +11,6 @@ MyASTVisitor::MyASTVisitor(Rewriter &R) : lineNumber{0},
                                         myRewriter{R}{}
 
 bool MyASTVisitor::VisitStmt(Stmt *s){
-    // Only care about If statements.
-
     SourceLocation omp_loc = s->getLocStart();
     SourceManager &SM = myRewriter.getSourceMgr();
     lineNumber = SM.getSpellingLineNumber(omp_loc);
