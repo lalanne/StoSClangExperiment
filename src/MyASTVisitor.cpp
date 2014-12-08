@@ -21,8 +21,6 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
 
         if(ompDirectiveLineNumberCache != lineNumber){
             ompDirectiveLineNumberCache = lineNumber;
-            OMPExecutableDirective* ompExecutableDirective = cast<OMPExecutableDirective>(s);
-
 
             if(isa<OMPParallelDirective>(s)){
             }
