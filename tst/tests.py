@@ -1,7 +1,15 @@
 import subprocess
 import os
 
-def test_basic_static():
+def create_output_cpp_file(nameOfFile, commandOutput):
+    fileHandler = open(nameOfFile, "w")
+    fileHandler.write(commandOutput)
+    fileHandler.close()
+
+def destroy_output_cpp_file(nameOfFile):
+    os.remove(nameOfFile)
+
+def execute_binary():
     args = ("/Users/lalanne/clang-llvm-omp/build/bin/sts", 
             "input/test_omp.cpp", 
             "--", 
@@ -9,10 +17,12 @@ def test_basic_static():
     popen = subprocess.Popen(args, stdout=subprocess.PIPE)
     popen.wait()
     output = popen.stdout.read()
+    return output
 
-    outputFileHandler = open("output.cpp", "w")
-    outputFileHandler.write(output)
-    outputFileHandler.close()
+
+def test_basic_static():
+    execute_binary()
+    create_output_cpp_file("output.cpp", execute_binary())
 
     resultHandler = open('output.cpp', 'r')
     resultFile = resultHandler.read()
@@ -23,5 +33,7 @@ def test_basic_static():
     assert expectedOutputFile == resultFile
 
     resultHandler.close()
-    os.remove("output.cpp")
+    expectedOutputFileHandler.close()
+
+    destroy_output_cpp_file("output.cpp")
 
