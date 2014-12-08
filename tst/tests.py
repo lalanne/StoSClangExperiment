@@ -36,6 +36,8 @@ def read_expected_result_file(testFileName):
     expectedOutputFileHandler.close()
     return expectedOutputFile
 
+########## TESTS START ############
+
 def test_basic_static():
     testFileName = "test_omp.cpp"
 
