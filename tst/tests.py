@@ -1,10 +1,7 @@
 import subprocess
 import os
 
-def func(x):
-    return x+1
-
-def test_basic():
+def test_basic_static():
     args = ("/Users/lalanne/clang-llvm-omp/build/bin/sts", 
             "input/test_omp.cpp", 
             "--", 
@@ -13,9 +10,9 @@ def test_basic():
     popen.wait()
     output = popen.stdout.read()
 
-    outputFile = open("output.cpp", "w")
-    outputFile.write(output)
-    outputFile.close()
+    outputFileHandler = open("output.cpp", "w")
+    outputFileHandler.write(output)
+    outputFileHandler.close()
 
     resultHandler = open('output.cpp', 'r')
     resultFile = resultHandler.read()
