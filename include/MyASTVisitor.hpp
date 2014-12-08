@@ -14,7 +14,6 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         MyASTVisitor(clang::Rewriter &R);
 
         bool VisitStmt(clang::Stmt *s);
-        bool VisitFunctionDecl(clang::FunctionDecl *f);
 
     private:
         /*This 2 fields are used for controlling the visit to OMP directives

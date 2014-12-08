@@ -17,33 +17,6 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
     SourceManager &SM = myRewriter.getSourceMgr();
     lineNumber = SM.getSpellingLineNumber(omp_loc);
 
-    if (isa<IfStmt>(s)) {
-        IfStmt *ifStatement = cast<IfStmt>(s);
-        Stmt *Then = ifStatement->getThen();
-
-        myRewriter.InsertText(Then->getLocStart(), "// the 'if' part\n", true,
-                     true);
-
-        Stmt *elseStatement = ifStatement->getElse();
-
-        if(elseStatement){
-            myRewriter.InsertText(elseStatement->getLocStart(), 
-                                "// the 'else' part\n",
-                                true, 
-                                true);
-
-        }
-    }
-
-    if(isa<ForStmt>(s)){
-        ForStmt *forStatement = cast<ForStmt>(s);
-        Stmt *body = forStatement->getBody();
-        myRewriter.InsertText(body->getLocStart(), 
-                            "// 'for' loop detected!!\n", 
-                            true,
-                            true);
-    }
-
     if(isa<OMPExecutableDirective>(s)){
 
         if(ompDirectiveLineNumberCache != lineNumber){
@@ -84,36 +57,6 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
         }
     }
     
-    return true;
-}
-
-bool MyASTVisitor::VisitFunctionDecl(FunctionDecl *f){
-    // Only function definitions (with bodies), not declarations.
-    if (f->hasBody()) {
-        Stmt *FuncBody = f->getBody();
-
-        // Type name as string
-        QualType QT = f->getReturnType();
-        string TypeStr = QT.getAsString();
-
-        // Function name
-        DeclarationName DeclName = f->getNameInfo().getName();
-        string FuncName = DeclName.getAsString();
-
-        // Add comment before
-        stringstream SSBefore;
-        SSBefore << "// Begin function " << FuncName << " returning " << TypeStr
-           << "\n";
-        SourceLocation ST = f->getSourceRange().getBegin();
-        myRewriter.InsertText(ST, SSBefore.str(), true, true);
-
-        // And after
-        stringstream SSAfter;
-        SSAfter << "\n// End function " << FuncName;
-        ST = FuncBody->getLocEnd().getLocWithOffset(1);
-        myRewriter.InsertText(ST, SSAfter.str(), true, true);
-    }
-
     return true;
 }
 
