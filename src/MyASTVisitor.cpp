@@ -5,6 +5,7 @@ using namespace clang;
 using namespace std;
 
 const unsigned int NUMBER_OF_CHARACTERS_STATIC_SCHEDULE = 6;
+const unsigned int NUMBER_OF_CHARACTERS_DYNAMIC_SCHEDULE = 7;
 
 MyASTVisitor::MyASTVisitor(Rewriter &R) : lineNumber{0},
                                         ompDirectiveLineNumberCache{0},
@@ -42,8 +43,14 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
                         }
                         break;
 
-                        case OMPC_SCHEDULE_runtime:
+                        case OMPC_SCHEDULE_dynamic:
                         {
+                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
+                                                NUMBER_OF_CHARACTERS_DYNAMIC_SCHEDULE);
+                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
+                                                "runtime", 
+                                                true,
+                                                true);
                         }
                         break;
                     

@@ -38,6 +38,8 @@ def read_expected_result_file(testFileName):
 
 ########## TESTS START ############
 
+########### STATIC ###############
+
 def test_basic_static():
     testFileName = "test_omp.cpp"
 
@@ -93,5 +95,20 @@ def test_basic_static_4():
     assert expectedOutputFile == resultFile
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
+
+
+########### DYNAMIC ###############
+
+def test_basic_dynamic():
+    testFileName = "test_omp_dynamic.cpp"
+
+    create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
+    resultFile = read_result_file()
+    expectedOutputFile = read_expected_result_file(testFileName)
+
+    assert expectedOutputFile == resultFile
+
+    destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
+
 
 
