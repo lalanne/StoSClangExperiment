@@ -77,13 +77,16 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
                                                 true);
                         }
                         break;
-                    
+
+                        case OMPC_SCHEDULE_unknown: //should throw here!
+                        case OMPC_SCHEDULE_runtime: //no action needed!
+                        case NUM_OPENMP_SCHEDULE_KINDS: //to avoid warning!
+                        break;
                     }
                 }
             }
         }
     }
-    
     return true;
 }
 
