@@ -2,3 +2,4 @@ __pycache__
 *.swp
 CMakeCache.txt
 CMakeFiles
+*.pyc
