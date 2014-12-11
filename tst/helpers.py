@@ -18,7 +18,9 @@ def execute_binary(inputFile):
     args = ("/Users/lalanne/clang-llvm-omp/build/bin/sts", 
             INPUT_FILES_RELATIVE_PATH + inputFile, 
             "--", 
-            "-fopenmp")
+            "-fopenmp",
+            "-I",
+            "/usr/local/Cellar/gcc49/4.9.2/lib/gcc/x86_64-apple-darwin14.0.0/4.9.2/include/")
     popen = subprocess.Popen(args, stdout=subprocess.PIPE)
     popen.wait()
     output = popen.stdout.read()

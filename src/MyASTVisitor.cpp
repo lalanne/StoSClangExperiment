@@ -1,6 +1,8 @@
 
 #include "MyASTVisitor.hpp"
 
+#include <iostream>
+
 using namespace clang;
 using namespace std;
 
@@ -24,6 +26,39 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
             ompDirectiveLineNumberCache = lineNumber;
 
             if(isa<OMPParallelDirective>(s)){
+            }
+
+            if(isa<OMPForDirective>(s)){
+                OMPForDirective* ompForDirective = cast<OMPForDirective>(s);
+
+                OMPClause* clause = ompForDirective->getClause(0); 
+                if(clause->getClauseKind() == OMPC_schedule){
+                    OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
+
+                    switch(scheduleClause->getScheduleKind()){
+                        case OMPC_SCHEDULE_static:
+                        {
+                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
+                                                NUMBER_OF_CHARACTERS_STATIC_SCHEDULE);
+                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
+                                                "runtime", 
+                                                true,
+                                                true);
+                        }
+                        break;
+                        case OMPC_SCHEDULE_dynamic:
+                        {
+                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
+                                                NUMBER_OF_CHARACTERS_DYNAMIC_SCHEDULE);
+                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
+                                                "runtime", 
+                                                true,
+                                                true);
+                        }
+                        break;
+
+                    }
+                }
             }
             
             if(isa<OMPParallelForDirective>(s)){
