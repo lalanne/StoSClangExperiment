@@ -1,8 +1,8 @@
 
 from helpers import *
 
-def test_basic_dynamic():
-    testFileName = "test_omp_dynamic.cpp"
+def test_basic_dynamic_parallel_for():
+    testFileName = "test_omp_dynamic_parallel_for.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
@@ -12,8 +12,8 @@ def test_basic_dynamic():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
-def test_basic_dynamic_1():
-    testFileName = "test_omp_dynamic1.cpp"
+def test_basic_dynamic_parallel_for_1():
+    testFileName = "test_omp_dynamic_parallel_for1.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
@@ -23,8 +23,8 @@ def test_basic_dynamic_1():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
-def test_basic_dynamic_2():
-    testFileName = "test_omp_dynamic2.cpp"
+def test_basic_dynamic_parallel_for_2():
+    testFileName = "test_omp_dynamic_parallel_for2.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
@@ -34,8 +34,8 @@ def test_basic_dynamic_2():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
-def test_basic_dynamic_3():
-    testFileName = "test_omp_dynamic3.cpp"
+def test_basic_dynamic_parallel_for_3():
+    testFileName = "test_omp_dynamic_parallel_for3.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
@@ -45,8 +45,8 @@ def test_basic_dynamic_3():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
-def test_basic_dynamic_4():
-    testFileName = "test_omp_dynamic4.cpp"
+def test_basic_dynamic_parallel_for_4():
+    testFileName = "test_omp_dynamic_parallel_for4.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()

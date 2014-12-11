@@ -16,6 +16,12 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         bool VisitStmt(clang::Stmt *s);
 
     private:
+        void swap_static_to_runtime(clang::OMPScheduleClause* const clause);
+        void swap_dynamic_to_runtime(clang::OMPScheduleClause* const clause);
+        void swap_guided_to_runtime(clang::OMPScheduleClause* const clause);
+        void swap_auto_to_runtime(clang::OMPScheduleClause* const clause);
+
+    private:
         /*This 2 fields are used for controlling the visit to OMP directives
          * that for some reason clang is visiting twice*/
         unsigned int lineNumber;

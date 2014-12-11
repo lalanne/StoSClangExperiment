@@ -15,6 +15,42 @@ MyASTVisitor::MyASTVisitor(Rewriter &R) : lineNumber{0},
                                         ompDirectiveLineNumberCache{0},
                                         myRewriter{R}{}
 
+void MyASTVisitor::swap_static_to_runtime(OMPScheduleClause* const clause){
+    myRewriter.RemoveText(clause->getScheduleKindLoc(), 
+                        NUMBER_OF_CHARACTERS_STATIC_SCHEDULE);
+    myRewriter.InsertText(clause->getScheduleKindLoc(), 
+                        "runtime", 
+                        true,
+                        true);
+}
+
+void MyASTVisitor::swap_dynamic_to_runtime(OMPScheduleClause* const clause){
+    myRewriter.RemoveText(clause->getScheduleKindLoc(), 
+                        NUMBER_OF_CHARACTERS_DYNAMIC_SCHEDULE);
+    myRewriter.InsertText(clause->getScheduleKindLoc(), 
+                        "runtime", 
+                        true,
+                        true);
+}
+
+void MyASTVisitor::swap_guided_to_runtime(OMPScheduleClause* const clause){
+    myRewriter.RemoveText(clause->getScheduleKindLoc(), 
+                        NUMBER_OF_CHARACTERS_GUIDED_SCHEDULE);
+    myRewriter.InsertText(clause->getScheduleKindLoc(), 
+                        "runtime", 
+                        true,
+                        true);
+}
+
+void MyASTVisitor::swap_auto_to_runtime(OMPScheduleClause* const clause){
+    myRewriter.RemoveText(clause->getScheduleKindLoc(), 
+                        NUMBER_OF_CHARACTERS_AUTO_SCHEDULE);
+    myRewriter.InsertText(clause->getScheduleKindLoc(), 
+                        "runtime", 
+                        true,
+                        true);
+}
+
 bool MyASTVisitor::VisitStmt(Stmt *s){
     SourceLocation omp_loc = s->getLocStart();
     SourceManager &SM = myRewriter.getSourceMgr();
@@ -38,22 +74,12 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
                     switch(scheduleClause->getScheduleKind()){
                         case OMPC_SCHEDULE_static:
                         {
-                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                NUMBER_OF_CHARACTERS_STATIC_SCHEDULE);
-                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                "runtime", 
-                                                true,
-                                                true);
+                            swap_static_to_runtime(scheduleClause);
                         }
                         break;
                         case OMPC_SCHEDULE_dynamic:
                         {
-                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                NUMBER_OF_CHARACTERS_DYNAMIC_SCHEDULE);
-                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                "runtime", 
-                                                true,
-                                                true);
+                            swap_dynamic_to_runtime(scheduleClause);
                         }
                         break;
 
@@ -71,45 +97,25 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
                     switch(scheduleClause->getScheduleKind()){
                         case OMPC_SCHEDULE_static:
                         {
-                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                NUMBER_OF_CHARACTERS_STATIC_SCHEDULE);
-                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                "runtime", 
-                                                true,
-                                                true);
+                            swap_static_to_runtime(scheduleClause);
                         }
                         break;
 
                         case OMPC_SCHEDULE_dynamic:
                         {
-                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                NUMBER_OF_CHARACTERS_DYNAMIC_SCHEDULE);
-                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                "runtime", 
-                                                true,
-                                                true);
+                            swap_dynamic_to_runtime(scheduleClause);
                         }
                         break;
 
                         case OMPC_SCHEDULE_guided:
                         {
-                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                NUMBER_OF_CHARACTERS_GUIDED_SCHEDULE);
-                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                "runtime", 
-                                                true,
-                                                true);
+                            swap_guided_to_runtime(scheduleClause);
                         }
                         break;
 
                         case OMPC_SCHEDULE_auto:
                         {
-                            myRewriter.RemoveText(scheduleClause->getScheduleKindLoc(), 
-                                                NUMBER_OF_CHARACTERS_AUTO_SCHEDULE);
-                            myRewriter.InsertText(scheduleClause->getScheduleKindLoc(), 
-                                                "runtime", 
-                                                true,
-                                                true);
+                            swap_auto_to_runtime(scheduleClause);
                         }
                         break;
 

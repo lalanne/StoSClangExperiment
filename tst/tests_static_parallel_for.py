@@ -1,8 +1,8 @@
 
 from helpers import *
 
-def test_basic_guided():
-    testFileName = "test_omp_guided.cpp"
+def test_basic_static_parallel_for():
+    testFileName = "test_omp.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
@@ -12,8 +12,8 @@ def test_basic_guided():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
-def test_basic_guided_1():
-    testFileName = "test_omp_guided1.cpp"
+def test_basic_static_parallel_for_1():
+    testFileName = "test_omp1.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
@@ -23,8 +23,9 @@ def test_basic_guided_1():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
-def test_basic_guided_2():
-    testFileName = "test_omp_guided2.cpp"
+
+def test_basic_static_parallel_for_2():
+    testFileName = "test_omp2.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
@@ -34,8 +35,8 @@ def test_basic_guided_2():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
-def test_basic_guided_3():
-    testFileName = "test_omp_guided3.cpp"
+def test_basic_static_parallel_for_3():
+    testFileName = "test_omp3.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
@@ -45,8 +46,8 @@ def test_basic_guided_3():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
-def test_basic_guided_4():
-    testFileName = "test_omp_guided4.cpp"
+def test_basic_static_parallel_for_4():
+    testFileName = "test_omp4.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()

@@ -1,8 +1,8 @@
 
 from helpers import *
 
-def test_basic_tst():
-    testFileName = "tst.cpp"
+def test_basic_dynamic_for():
+    testFileName = "test_omp_dynamic_for.cpp"
 
     create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
     resultFile = read_result_file()
