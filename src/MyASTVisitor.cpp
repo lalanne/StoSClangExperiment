@@ -51,6 +51,40 @@ void MyASTVisitor::swap_auto_to_runtime(OMPScheduleClause* const clause){
                         true);
 }
 
+void MyASTVisitor::process_schedule_omp_clause(OMPClause* const clause){
+    OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
+    switch(scheduleClause->getScheduleKind()){
+        case OMPC_SCHEDULE_static:
+        {
+            swap_static_to_runtime(scheduleClause);
+        }
+        break;
+
+        case OMPC_SCHEDULE_dynamic:
+        {
+            swap_dynamic_to_runtime(scheduleClause);
+        }
+        break;
+
+        case OMPC_SCHEDULE_guided:
+        {
+            swap_guided_to_runtime(scheduleClause);
+        }
+        break;
+
+        case OMPC_SCHEDULE_auto:
+        {
+            swap_auto_to_runtime(scheduleClause);
+        }
+        break;
+
+        case OMPC_SCHEDULE_unknown: //should throw here!
+        case OMPC_SCHEDULE_runtime: //no action needed!
+        case NUM_OPENMP_SCHEDULE_KINDS: //to avoid warning!
+        break;
+    }
+}
+
 bool MyASTVisitor::VisitStmt(Stmt *s){
     SourceLocation omp_loc = s->getLocStart();
     SourceManager &SM = myRewriter.getSourceMgr();
@@ -61,87 +95,18 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
         if(ompDirectiveLineNumberCache != lineNumber){
             ompDirectiveLineNumberCache = lineNumber;
 
-            if(isa<OMPParallelDirective>(s)){
-            }
-
             if(isa<OMPForDirective>(s)){
                 OMPForDirective* ompForDirective = cast<OMPForDirective>(s);
 
                 OMPClause* clause = ompForDirective->getClause(0); 
-                if(clause->getClauseKind() == OMPC_schedule){
-                    OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
-
-                    switch(scheduleClause->getScheduleKind()){
-                        case OMPC_SCHEDULE_static:
-                        {
-                            swap_static_to_runtime(scheduleClause);
-                        }
-                        break;
-
-                        case OMPC_SCHEDULE_dynamic:
-                        {
-                            swap_dynamic_to_runtime(scheduleClause);
-                        }
-                        break;
-
-                        case OMPC_SCHEDULE_guided:
-                        {
-                            swap_guided_to_runtime(scheduleClause);
-                        }
-                        break;
-
-                        case OMPC_SCHEDULE_auto:
-                        {
-                            swap_auto_to_runtime(scheduleClause);
-                        }
-                        break;
-
-                        case OMPC_SCHEDULE_unknown: //should throw here!
-                        case OMPC_SCHEDULE_runtime: //no action needed!
-                        case NUM_OPENMP_SCHEDULE_KINDS: //to avoid warning!
-                        break;
-                    }
-                }
+                if(clause->getClauseKind() == OMPC_schedule) process_schedule_omp_clause(clause);
             }
             
             if(isa<OMPParallelForDirective>(s)){
                 OMPParallelForDirective* ompParallelForDirective = cast<OMPParallelForDirective>(s);
 
                 OMPClause* clause = ompParallelForDirective->getClause(0); 
-                if(clause->getClauseKind() == OMPC_schedule){
-                    OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
-
-                    switch(scheduleClause->getScheduleKind()){
-                        case OMPC_SCHEDULE_static:
-                        {
-                            swap_static_to_runtime(scheduleClause);
-                        }
-                        break;
-
-                        case OMPC_SCHEDULE_dynamic:
-                        {
-                            swap_dynamic_to_runtime(scheduleClause);
-                        }
-                        break;
-
-                        case OMPC_SCHEDULE_guided:
-                        {
-                            swap_guided_to_runtime(scheduleClause);
-                        }
-                        break;
-
-                        case OMPC_SCHEDULE_auto:
-                        {
-                            swap_auto_to_runtime(scheduleClause);
-                        }
-                        break;
-
-                        case OMPC_SCHEDULE_unknown: //should throw here!
-                        case OMPC_SCHEDULE_runtime: //no action needed!
-                        case NUM_OPENMP_SCHEDULE_KINDS: //to avoid warning!
-                        break;
-                    }
-                }
+                if(clause->getClauseKind() == OMPC_schedule) process_schedule_omp_clause(clause);
             }
         }
     }

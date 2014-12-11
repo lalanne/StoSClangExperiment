@@ -20,6 +20,7 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         void swap_dynamic_to_runtime(clang::OMPScheduleClause* const clause);
         void swap_guided_to_runtime(clang::OMPScheduleClause* const clause);
         void swap_auto_to_runtime(clang::OMPScheduleClause* const clause);
+        void process_schedule_omp_clause(clang::OMPClause* const clause);
 
     private:
         /*This 2 fields are used for controlling the visit to OMP directives
