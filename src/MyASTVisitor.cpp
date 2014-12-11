@@ -77,12 +77,29 @@ bool MyASTVisitor::VisitStmt(Stmt *s){
                             swap_static_to_runtime(scheduleClause);
                         }
                         break;
+
                         case OMPC_SCHEDULE_dynamic:
                         {
                             swap_dynamic_to_runtime(scheduleClause);
                         }
                         break;
 
+                        case OMPC_SCHEDULE_guided:
+                        {
+                            swap_guided_to_runtime(scheduleClause);
+                        }
+                        break;
+
+                        case OMPC_SCHEDULE_auto:
+                        {
+                            swap_auto_to_runtime(scheduleClause);
+                        }
+                        break;
+
+                        case OMPC_SCHEDULE_unknown: //should throw here!
+                        case OMPC_SCHEDULE_runtime: //no action needed!
+                        case NUM_OPENMP_SCHEDULE_KINDS: //to avoid warning!
+                        break;
                     }
                 }
             }
