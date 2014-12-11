@@ -51,8 +51,8 @@ void MyASTVisitor::swap_auto_to_runtime(OMPScheduleClause* const clause){
                         true);
 }
 
-void MyASTVisitor::process_schedule_omp_clause(OMPClause* const clause){
-    OMPScheduleClause* scheduleClause = cast<OMPScheduleClause>(clause);
+void MyASTVisitor::process_omp_schedule_clause(OMPClause* const clause){
+    OMPScheduleClause* const scheduleClause = cast<OMPScheduleClause>(clause);
     switch(scheduleClause->getScheduleKind()){
         case OMPC_SCHEDULE_static:
         {
@@ -85,31 +85,32 @@ void MyASTVisitor::process_schedule_omp_clause(OMPClause* const clause){
     }
 }
 
+void MyASTVisitor::process_omp_executable_directive(const Stmt* const s){
+    if(ompDirectiveLineNumberCache != lineNumber){
+        ompDirectiveLineNumberCache = lineNumber;
+
+        if(isa<OMPForDirective>(s)){
+            const OMPForDirective* const ompForDirective = cast<OMPForDirective>(s);
+
+            OMPClause* const clause = ompForDirective->getClause(0); 
+            if(clause->getClauseKind() == OMPC_schedule) process_omp_schedule_clause(clause);
+        }
+        
+        if(isa<OMPParallelForDirective>(s)){
+            const OMPParallelForDirective* const ompParallelForDirective = cast<OMPParallelForDirective>(s);
+
+            OMPClause* const clause = ompParallelForDirective->getClause(0); 
+            if(clause->getClauseKind() == OMPC_schedule) process_omp_schedule_clause(clause);
+        }
+    }
+}
+
 bool MyASTVisitor::VisitStmt(Stmt *s){
     SourceLocation omp_loc = s->getLocStart();
     SourceManager &SM = myRewriter.getSourceMgr();
     lineNumber = SM.getSpellingLineNumber(omp_loc);
 
-    if(isa<OMPExecutableDirective>(s)){
-
-        if(ompDirectiveLineNumberCache != lineNumber){
-            ompDirectiveLineNumberCache = lineNumber;
-
-            if(isa<OMPForDirective>(s)){
-                OMPForDirective* ompForDirective = cast<OMPForDirective>(s);
-
-                OMPClause* clause = ompForDirective->getClause(0); 
-                if(clause->getClauseKind() == OMPC_schedule) process_schedule_omp_clause(clause);
-            }
-            
-            if(isa<OMPParallelForDirective>(s)){
-                OMPParallelForDirective* ompParallelForDirective = cast<OMPParallelForDirective>(s);
-
-                OMPClause* clause = ompParallelForDirective->getClause(0); 
-                if(clause->getClauseKind() == OMPC_schedule) process_schedule_omp_clause(clause);
-            }
-        }
-    }
+    if(isa<OMPExecutableDirective>(s)) process_omp_executable_directive(s);
     return true;
 }
 
