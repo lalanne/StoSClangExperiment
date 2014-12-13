@@ -1,8 +1,6 @@
 
 #include "MyASTVisitor.hpp"
 
-#include <iostream>
-
 using namespace clang;
 using namespace std;
 
