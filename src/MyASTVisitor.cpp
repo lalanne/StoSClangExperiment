@@ -87,7 +87,6 @@ void MyASTVisitor::process_omp_schedule_clause(OMPClause* const clause){
 
 unsigned int MyASTVisitor::compute_schedule_clause_position(const OMPParallelForDirective* const ompParallelForDirective){
     const unsigned int numberOfClauses = ompParallelForDirective->getNumClauses();
-    unsigned int schedulePosition = 0;
     for(unsigned int i=0; i<numberOfClauses; ++i){
         OMPClause* const tmp = ompParallelForDirective->getClause(i);
         if(tmp->getClauseKind() == OMPC_schedule) return i;
@@ -96,7 +95,6 @@ unsigned int MyASTVisitor::compute_schedule_clause_position(const OMPParallelFor
 
 unsigned int MyASTVisitor::compute_schedule_clause_position(const OMPForDirective* const ompForDirective){
     const unsigned int numberOfClauses = ompForDirective->getNumClauses();
-    unsigned int schedulePosition = 0;
     for(unsigned int i=0; i<numberOfClauses; ++i){
         OMPClause* const tmp = ompForDirective->getClause(i);
         if(tmp->getClauseKind() == OMPC_schedule) return i;
