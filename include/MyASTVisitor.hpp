@@ -24,6 +24,9 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         void process_omp_schedule_clause(clang::OMPClause* const clause);
         void process_omp_executable_directive(const clang::Stmt* const s);
 
+        unsigned int compute_schedule_clause_position(const clang::OMPParallelForDirective* const ompParallelForDirective);
+        unsigned int compute_schedule_clause_position(const clang::OMPForDirective* const ompForDirective);
+
     private:
         /*This 2 fields are used for controlling the visit to OMP directives
          * that for some reason clang is visiting twice*/

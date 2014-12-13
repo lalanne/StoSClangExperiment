@@ -57,3 +57,14 @@ def test_basic_static_parallel_for_4():
 
     destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
 
+def test_basic_static_parallel_for_5():
+    testFileName = "test_omp5.cpp"
+
+    create_output_cpp_file(RESULT_CPP_FILE_NAME, execute_binary(testFileName))
+    resultFile = read_result_file()
+    expectedOutputFile = read_expected_result_file(testFileName)
+
+    assert expectedOutputFile == resultFile
+
+    destroy_output_cpp_file(RESULT_CPP_FILE_NAME)
+

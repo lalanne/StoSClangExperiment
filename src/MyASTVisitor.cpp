@@ -85,21 +85,41 @@ void MyASTVisitor::process_omp_schedule_clause(OMPClause* const clause){
     }
 }
 
+unsigned int MyASTVisitor::compute_schedule_clause_position(const OMPParallelForDirective* const ompParallelForDirective){
+    const unsigned int numberOfClauses = ompParallelForDirective->getNumClauses();
+    unsigned int schedulePosition = 0;
+    for(unsigned int i=0; i<numberOfClauses; ++i){
+        OMPClause* const tmp = ompParallelForDirective->getClause(i);
+        if(tmp->getClauseKind() == OMPC_schedule) return i;
+    }
+}
+
+unsigned int MyASTVisitor::compute_schedule_clause_position(const OMPForDirective* const ompForDirective){
+    const unsigned int numberOfClauses = ompForDirective->getNumClauses();
+    unsigned int schedulePosition = 0;
+    for(unsigned int i=0; i<numberOfClauses; ++i){
+        OMPClause* const tmp = ompForDirective->getClause(i);
+        if(tmp->getClauseKind() == OMPC_schedule) return i;
+    }
+}
+
 void MyASTVisitor::process_omp_executable_directive(const Stmt* const s){
     if(ompDirectiveLineNumberCache != lineNumber){
         ompDirectiveLineNumberCache = lineNumber;
 
         if(isa<OMPForDirective>(s)){
             const OMPForDirective* const ompForDirective = cast<OMPForDirective>(s);
+            const unsigned int schedulePosition = compute_schedule_clause_position(ompForDirective);
 
-            OMPClause* const clause = ompForDirective->getClause(0); 
+            OMPClause* const clause = ompForDirective->getClause(schedulePosition); 
             if(clause->getClauseKind() == OMPC_schedule) process_omp_schedule_clause(clause);
         }
         
         if(isa<OMPParallelForDirective>(s)){
             const OMPParallelForDirective* const ompParallelForDirective = cast<OMPParallelForDirective>(s);
+            const unsigned int schedulePosition = compute_schedule_clause_position(ompParallelForDirective);
 
-            OMPClause* const clause = ompParallelForDirective->getClause(0); 
+            OMPClause* const clause = ompParallelForDirective->getClause(schedulePosition); 
             if(clause->getClauseKind() == OMPC_schedule) process_omp_schedule_clause(clause);
         }
     }
