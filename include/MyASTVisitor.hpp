@@ -24,8 +24,8 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         void process_omp_schedule_clause(clang::OMPClause* const clause);
         void process_omp_executable_directive(const clang::Stmt* const s);
 
-        unsigned int compute_schedule_clause_position(const clang::OMPParallelForDirective* const ompParallelForDirective);
-        unsigned int compute_schedule_clause_position(const clang::OMPForDirective* const ompForDirective);
+        template<typename T>
+        unsigned int compute_schedule_clause_position(const T* const ompDirective);
 
     private:
         /*This 2 fields are used for controlling the visit to OMP directives
@@ -35,5 +35,15 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         /*Handles Rewriting of the source code*/
         clang::Rewriter &myRewriter;
 };
+
+template<typename T>
+unsigned int MyASTVisitor::compute_schedule_clause_position(const T* const ompDirective){
+    const unsigned int numberOfClauses = ompDirective->getNumClauses();
+    for(unsigned int i=0; i<numberOfClauses; ++i){
+        clang::OMPClause* const tmp = ompDirective->getClause(i);
+        if(tmp->getClauseKind() == clang::OMPC_schedule) return i;
+    }
+}
+
 
 #endif //MY_AST_VISITOR_98U9EW8FU9QW8UEF
