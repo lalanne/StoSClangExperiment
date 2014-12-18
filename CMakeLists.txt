@@ -8,6 +8,7 @@ add_clang_executable(sts
     src/MyASTConsumer.cpp
     src/MyFrontendAction.cpp
     src/MyASTVisitor.cpp
+    src/SwapToRuntime.cpp
   )
 
 target_link_libraries(sts

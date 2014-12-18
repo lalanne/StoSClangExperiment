@@ -2,6 +2,8 @@
 #ifndef MY_AST_VISITOR_98U9EW8FU9QW8UEF
 #define MY_AST_VISITOR_98U9EW8FU9QW8UEF
 
+#include "SwapToRuntime.hpp"
+
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/AST/RecursiveASTVisitor.h"
@@ -16,11 +18,6 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         bool VisitStmt(clang::Stmt *s);
 
     private:
-        void swap_static_to_runtime(clang::OMPScheduleClause* const clause);
-        void swap_dynamic_to_runtime(clang::OMPScheduleClause* const clause);
-        void swap_guided_to_runtime(clang::OMPScheduleClause* const clause);
-        void swap_auto_to_runtime(clang::OMPScheduleClause* const clause);
-
         void process_omp_schedule_clause(clang::OMPClause* const clause);
         void process_omp_executable_directive(const clang::Stmt* const s);
 
@@ -34,6 +31,7 @@ class MyASTVisitor : public clang::RecursiveASTVisitor<MyASTVisitor> {
         unsigned int ompDirectiveLineNumberCache;
         /*Handles Rewriting of the source code*/
         clang::Rewriter &myRewriter;
+        SwapToRuntime swapToRuntime;
 };
 
 template<typename T>
